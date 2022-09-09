@@ -51,7 +51,7 @@ df.drop(['beds', 'price', 'baths', 'sqft'], inplace=True, axis=1)
 print(len(df))
 print(tabulate(df.head(5), headers=df.columns))
 # df['db'] = df.apply(lambda row: create_records(row), axis=1)
-df.to_csv('Total.csv', index=False)
+# df.to_csv('Total.csv', index=False)
 
 print(Apartment.objects.all())
 
