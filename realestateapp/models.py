@@ -1,6 +1,63 @@
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager, PermissionsMixin, AbstractUser)
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
+
+class CustomUserManager(BaseUserManager):
+
+    def create_user(self, email, password=None, **kwargs):
+
+        if not email:
+            raise ValueError('User must have an email address')
+
+        user = self.model(
+            email=self.normalize_email(email),
+            **kwargs
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password=None, **kwargs):
+        if password is None:
+            raise TypeError('Password should not be none')
+
+        if not email:
+            raise ValueError('User must have an email address')
+
+        kwargs.update({'is_superuser': True,
+                       'is_staff': True,
+                       'is_admin': True})
+
+        user = self.model(
+            email=self.normalize_email(email),
+            **kwargs
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(_('email address'), unique=True)
+
+    # required fields
+    date_joined = models.DateTimeField(auto_now_add=True)
+
+    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_superuser = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.email
+
+
 class Apartment(models.Model):
     # id = models.BigIntegerField(primary_key=True, unique=True)
     # price = models.FloatField(null=True, blank=True)
