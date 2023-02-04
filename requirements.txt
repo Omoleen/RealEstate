@@ -1,7 +1,6 @@
 asgiref==3.5.2
 certifi==2022.6.15
 charset-normalizer==2.1.1
-Django==4.1.1
 idna==3.3
 numpy==1.23.2
 pandas==1.4.4
@@ -17,3 +16,7 @@ tabulate==0.8.10
 tzdata==2022.2
 urllib3==1.26.12
 xmltodict==0.13.0
+django==4.0.4
+django-cockroachdb==4.0
+dj-database-url
+whitenoise
