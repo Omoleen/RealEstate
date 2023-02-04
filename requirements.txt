@@ -21,3 +21,4 @@ django-cockroachdb==4.0
 dj-database-url
 whitenoise
 psycopg2
+gunicorn
