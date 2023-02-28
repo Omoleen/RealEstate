@@ -6,6 +6,7 @@ from .models import User, Apartment
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 import random
+from django.contrib.auth import logout
 
 
 def landing(request):
@@ -64,6 +65,7 @@ def loginview(request):
     return render(request, 'login.html')
 
 
+@login_required
 def profile(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -73,3 +75,8 @@ def profile(request):
     }
 
     return render(request, 'profile.html', context)
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('landing')
