@@ -14,7 +14,7 @@ def landing(request):
                                               'min_beds', 'max_beds',
                                               'min_baths', 'max_baths',
                                               'address')
-    apartments = [random.choice(apartments) for i in range(16)]
+    apartments = [random.choice(apartments) for i in range(32)]
     context = {
         'user': request.user if request.user.is_authenticated else None,
         'apartments': apartments
