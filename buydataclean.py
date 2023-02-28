@@ -2,7 +2,7 @@ import pandas as pd
 from tabulate import tabulate
 from django.conf import settings
 import Realestate.settings as app_settings
-settings.configure(INSTALLED_APPS=app_settings.INSTALLED_APPS,DATABASES=app_settings.DATABASES)
+settings.configure(INSTALLED_APPS=app_settings.INSTALLED_APPS, DATABASES=app_settings.DATABASES)
 import django
 django.setup()
 from realestateapp.models import Apartment, Properties

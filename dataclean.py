@@ -1,12 +1,7 @@
 import pandas as pd
 from tabulate import tabulate
-from django.conf import settings
-import Realestate.settings as app_settings
+from Realestate.wsgi import application
 from realestateapp.models import Apartment
-import django
-
-settings.configure(INSTALLED_APPS=app_settings.INSTALLED_APPS, DATABASES=app_settings.DATABASES)
-django.setup()
 
 
 def add_all_states():
@@ -49,10 +44,13 @@ def create_records(row):
 df = pd.read_csv('Total.csv')
 print(len(df))
 df.dropna(axis=0, subset=['year_built'], inplace=True)
-df.drop(['beds', 'price', 'baths', 'sqft'], inplace=True, axis=1)
+# df.drop(['beds', 'price', 'baths', 'sqft'], inplace=True, axis=1)
 print(len(df))
 print(tabulate(df.head(5), headers=df.columns))
 df['db'] = df.apply(lambda row: create_records(row), axis=1)
+# df['pictures'] = df['pictures'].apply(lambda x: x.replace('s.jpg', 'od-w480_h360_x2.webp'))
+# df['pictures1'] = df['pictures1'].apply(lambda x: x.replace('s.jpg', 'od-w480_h360_x2.webp'))
+print(tabulate(df.head(5), headers=df.columns))
 df.to_csv('Total.csv', index=False)
 
-print(Apartment.objects.all())
+# print(Apartment.objects.all())
