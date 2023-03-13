@@ -34,12 +34,12 @@ def landing(request):
                 ((Q(min_price__lte=budget) & Q(max_price__gte=budget)) | Q(max_price=budget)))
         if rooms:
             apartments = apartments.filter(((Q(min_beds__lte=rooms) & Q(max_beds__gte=rooms)) | Q(max_beds=rooms)))
-        if cats:
-            apartments = apartments.filter(cats=cats)
-            print(apartments)
-        if dogs:
-            apartments = apartments.filter(dogs=dogs)
-            print(apartments)
+        # if cats:
+        #     apartments = apartments.filter(cats=cats)
+        #     print(apartments)
+        # if dogs:
+        #     apartments = apartments.filter(dogs=dogs)
+        #     print(apartments)
         apartments = apartments[:16]
     else:
         apartments = Apartment.objects.all().only('pictures', 'pictures1',
