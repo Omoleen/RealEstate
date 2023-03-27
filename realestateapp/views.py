@@ -9,6 +9,14 @@ import random
 from django.db.models import Q
 from django.contrib.auth import logout
 from pprint import pprint
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from bs4 import BeautifulSoup
+import json
 
 
 def landing(request):
@@ -19,12 +27,13 @@ def landing(request):
         rooms = request.POST.get('rooms')
         dogs = request.POST.get('dogs')
         cats = request.POST.get('cats')
-        apartments = Apartment.objects.filter().only('pictures', 'pictures1',
-                                                     'min_price', 'max_price',
-                                                     'min_beds', 'max_beds',
-                                                     'min_baths', 'max_baths',
-                                                     'address', 'baths', 'price',
-                                                     'beds', 'state', 'dogs', 'cats')
+        apartments = Apartment.objects.exclude(min_price__isnull=True,
+                                               max_price__isnull=True, ).only('pictures', 'pictures1',
+                                                                              'min_price', 'max_price',
+                                                                              'min_beds', 'max_beds',
+                                                                              'min_baths', 'max_baths',
+                                                                              'address', 'baths', 'price',
+                                                                              'beds', 'state', 'dogs', 'cats')
         if baths:
             apartments = apartments.filter(((Q(min_baths__lte=baths) & Q(max_baths__gte=baths)) | Q(max_baths=baths)))
         if location:
@@ -42,12 +51,13 @@ def landing(request):
         #     print(apartments)
         apartments = apartments[:16]
     else:
-        apartments = Apartment.objects.all().only('pictures', 'pictures1',
-                                                  'min_price', 'max_price',
-                                                  'min_beds', 'max_beds',
-                                                  'min_baths', 'max_baths',
-                                                  'address', 'baths', 'price',
-                                                  'beds', 'state', 'dogs', 'cats')
+        apartments = Apartment.objects.exclude(min_price__isnull=True,
+                                               max_price__isnull=True, ).only('pictures', 'pictures1',
+                                                                              'min_price', 'max_price',
+                                                                              'min_beds', 'max_beds',
+                                                                              'min_baths', 'max_baths',
+                                                                              'address', 'baths', 'price',
+                                                                              'beds', 'state', 'dogs', 'cats')
         # print(apartments.values()[:16])
         # apartments = apartments[:16]
         apartments = [random.choice(apartments) for i in range(16)]
@@ -55,6 +65,7 @@ def landing(request):
         'user': request.user if request.user.is_authenticated else None,
         'apartments': apartments
     }
+    pprint(context)
 
     return render(request, 'index.html', context)
 
@@ -73,7 +84,7 @@ def register(request):
             user = authenticate(request, email=email, password=password1)
             if user is not None:
                 login(request, user)
-                return redirect('landing')
+                return redirect('profile')
         else:
             messages.error(request, f"Passwords do not match")
             return redirect('register')
@@ -82,7 +93,7 @@ def register(request):
 
 def loginview(request):
     if request.user.is_authenticated:
-        return redirect('profile')
+        return redirect('landing')
 
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -90,7 +101,7 @@ def loginview(request):
         user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
-            return redirect('profile')
+            return redirect('landing')
         else:
             existing_user = User.objects.filter(email=email).count()
             if existing_user:
@@ -101,7 +112,7 @@ def loginview(request):
     return render(request, 'login.html')
 
 
-@login_required
+# @login_required
 def profile(request):
     if not request.user.is_authenticated:
         return redirect('login')
@@ -164,3 +175,57 @@ def search(request):
 def logout_view(request):
     logout(request)
     return redirect('landing')
+
+
+def get_page_content(url, timeout):
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(options=options)
+    driver.get(url)
+    try:
+        element_present = EC.presence_of_element_located((By.TAG_NAME, 'body'))
+        WebDriverWait(driver, timeout).until(element_present)
+    except TimeoutException:
+        print(f'Timeout reached after {timeout} seconds.')
+    content = driver.page_source
+    driver.quit()
+    return content
+
+
+def property(request, permalink):
+    # print(permalink)
+    apartment = Apartment.objects.filter(permalink=permalink).first()
+    url = f'https://www.realtor.com/realestateandhomes-detail/{permalink}'
+    # print(get_page_content(url, 5000))
+    options = webdriver.ChromeOptions()
+    options.add_argument('--headless')
+    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    driver.get(url)
+    try:
+        element_present = EC.presence_of_element_located((By.TAG_NAME, 'body'))
+        WebDriverWait(driver, 3000).until(element_present)
+    except TimeoutException:
+        print(f'Timeout reached after 5000 seconds.')
+    content = driver.page_source
+    soup = BeautifulSoup(content, 'html.parser')
+    storage = {}
+    scripts = soup.find_all('script')
+    for script_tag in scripts:
+        if 'id' in script_tag.attrs and script_tag.attrs['id'] == '__NEXT_DATA__':
+            page = json.loads(script_tag.text)
+            for feature in page['props']['pageProps']['property']['details']:
+                # storage[feature['category']] = feature['text']
+                num = len(feature['text']) // 2
+                storage[feature['category']] = []
+                storage[feature['category']].append(feature['text'][:num + 1])
+                storage[feature['category']].append(feature['text'][num + 1:])
+            pprint(storage)
+            # print(content)
+            break
+    driver.quit()
+    context = {}
+    context['apartment'] = apartment
+    context['storage'] = storage
+    print(context)
+    # context.update(storage)
+    return render(request, 'property.html', context)

@@ -44,7 +44,7 @@ def create_records(row):
 
 df = pd.read_csv('Total_new.csv')
 print(len(df))
-# df.dropna(axis=0, subset=['beds', 'price', 'baths'], inplace=True)
+df.dropna(axis=0, subset=['min_beds', 'min_price', 'min_baths'], inplace=True)
 # df.drop(['beds', 'price', 'baths', 'sqft'], inplace=True, axis=1)
 print(len(df))
 # print(tabulate(df.head(5), headers=df.columns))
