@@ -17,6 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import json
+import os
 
 
 def landing(request):
@@ -197,9 +198,18 @@ def property(request, permalink):
     apartment = Apartment.objects.filter(permalink=permalink).first()
     url = f'https://www.realtor.com/realestateandhomes-detail/{permalink}'
     # print(get_page_content(url, 5000))
-    options = webdriver.ChromeOptions()
-    options.add_argument('--headless')
-    driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+
+    # options = webdriver.ChromeOptions()
+    # options.add_argument('--headless')
+    # driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
+    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"),
+                              chrome_options=chrome_options)
+
     driver.get(url)
     try:
         element_present = EC.presence_of_element_located((By.TAG_NAME, 'body'))
