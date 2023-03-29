@@ -213,7 +213,7 @@ def property(request, permalink):
     driver.get(url)
     try:
         element_present = EC.presence_of_element_located((By.TAG_NAME, 'body'))
-        WebDriverWait(driver, 4000).until(element_present)
+        WebDriverWait(driver, 5000).until(element_present)
     except TimeoutException:
         print(f'Timeout reached after 5000 seconds.')
     content = driver.page_source
