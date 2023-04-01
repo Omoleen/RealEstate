@@ -93,6 +93,7 @@ def register(request):
 
 
 def loginview(request):
+    print(request.user.is_authenticated)
     if request.user.is_authenticated:
         return redirect('landing')
 
@@ -109,7 +110,7 @@ def loginview(request):
                 messages.error(request, f"Password Incorrect")
             else:
                 messages.error(request, f"User doesn't exist")
-            return redirect('register')
+                return redirect('register')
     return render(request, 'login.html')
 
 
