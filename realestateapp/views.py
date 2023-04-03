@@ -248,6 +248,6 @@ def property(request, permalink):
     context = {}
     context['apartment'] = apartment
     context['storage'] = storage
-    print(context)
+    # print(context)
     # context.update(storage)
     return render(request, 'property.html', context)
