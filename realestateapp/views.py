@@ -262,33 +262,34 @@ def property(request, permalink):
             page = json.loads(script_tag.text)
             for feature in page['props']['pageProps']['property']['details']:
                 # storage[feature['category']] = feature['text']
-                for feat in feature['text']:
-                    if request.user.pets:
-                        if (
-                                'dog' in feat.lower() or 'cat' in feat.lower()) and 'allowed' in feat.lower() and not 'not' in feat.lower() and not \
-                                mate['pets']:
-                            mate['pets'] = True
+                if request.user.is_authenticated:
+                    for feat in feature['text']:
+                        if request.user.pets:
+                            if (
+                                    'dog' in feat.lower() or 'cat' in feat.lower()) and 'allowed' in feat.lower() and not 'not' in feat.lower() and not \
+                                    mate['pets']:
+                                mate['pets'] = True
+                                counter += 1
+                        else:
                             counter += 1
-                    else:
-                        counter += 1
-                    if request.user.washer:
-                        if 'washer' in feat.lower() and not mate['washer']:
-                            mate['washer'] = True
+                        if request.user.washer:
+                            if 'washer' in feat.lower() and not mate['washer']:
+                                mate['washer'] = True
+                                counter += 1
+                        else:
                             counter += 1
-                    else:
-                        counter += 1
-                    if request.user.dryer:
-                        if 'dryer' in feat.lower() and not mate['dryer']:
-                            mate['dryer'] = True
+                        if request.user.dryer:
+                            if 'dryer' in feat.lower() and not mate['dryer']:
+                                mate['dryer'] = True
+                                counter += 1
+                        else:
                             counter += 1
-                    else:
-                        counter += 1
-                    if request.user.car:
-                        if 'garage' in feat.lower() and not mate['garage']:
-                            mate['garage'] = True
+                        if request.user.car:
+                            if 'garage' in feat.lower() and not mate['garage']:
+                                mate['garage'] = True
+                                counter += 1
+                        else:
                             counter += 1
-                    else:
-                        counter += 1
 
                 num = len(feature['text']) // 2
                 storage[feature['category']] = []
