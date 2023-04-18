@@ -187,6 +187,21 @@
     }
 
 
+    // Get the ID value from the URL's fragment identifier
+    var targetId = window.location.hash.substring(1);
+    if (targetId === 'signup') {
+        targetId = 'ex3-tab-2'
+    }
+
+    // Get a reference to the element with the specified ID
+    var targetElement = document.getElementById(targetId);
+
+    // If the element exists, set the focus on it
+    if (targetElement) {
+        targetElement.click();
+    }
+
+
 </script>
 
 <!-- Template Main JS File -->

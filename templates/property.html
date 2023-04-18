@@ -215,13 +215,17 @@
                                     <i class="fa fa-check" aria-hidden="true" style="color: green"></i>{% endif %}</li>
                             </ul>
                         {% else %}
-                            <p>Login or Create a new account to check if this property is a good match!</p>
+                            <p><a href="{% url 'login' %}" class="text-decoration-none">Login or Create</a>
+                                a new
+                                account to check if this property is a good match!</p>
                         {% endif %}
                     </div>
-                    <p class="text-dark">There's a roommate match for this apartment! click <a href=""
-                                                                                               data-bs-toggle="modal"
-                                                                                               data-bs-target="#exampleModalCenter">here</a>
-                        to check it out</p>
+                    {% if request.user.is_authenticated and request.user.mate %}
+                        <p class="text-dark">There's a roommate match for this apartment! click <a href=""
+                                                                                                   data-bs-toggle="modal"
+                                                                                                   data-bs-target="#exampleModalCenter">here</a>
+                            to check it out</p>
+                    {% endif %}
 
 
                     <!-- Button trigger modal -->
