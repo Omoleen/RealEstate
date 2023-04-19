@@ -395,12 +395,9 @@ def quiz(request):
 
 
 def favourites(request):
-    # print(request.POST)
-    # if request.method == 'POST':
-    #     FavouriteApartment.objects.create(user=request.user, apartment_id=request.POST.get('id'))
-    # return render(request, )
     apartments = request.user.favourites.all()
-    context = {'apartments': apartments}
+    print()
+    context = {'apartments': [apartment.apartment for apartment in apartments]}
     return render(request, 'favourites.html', context=context)
 
 
