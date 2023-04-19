@@ -396,7 +396,6 @@ def quiz(request):
 
 def favourites(request):
     apartments = request.user.favourites.all()
-    print()
     context = {'apartments': [apartment.apartment for apartment in apartments]}
     return render(request, 'favourites.html', context=context)
 
