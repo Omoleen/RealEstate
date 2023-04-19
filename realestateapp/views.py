@@ -404,5 +404,6 @@ def favourites(request):
 
 
 def savefavourite(request, id):
-    FavouriteApartment.objects.create(user=request.user, apartment_id=id)
+    if not FavouriteApartment.objects.filter(apartment_id=id).exists():
+        FavouriteApartment.objects.create(user=request.user, apartment_id=id)
     return render(request, 'save.html', )
